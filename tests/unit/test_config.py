@@ -7,13 +7,14 @@ from pathlib import Path
 import pytest
 import yaml
 
-from drt.config.credentials import ProfileConfig, load_profile, save_profile
+from drt.config.credentials import BigQueryProfile, ProfileConfig, load_profile, save_profile
 from drt.config.models import (
     ApiKeyAuth,
     BasicAuth,
     BearerAuth,
     DestinationConfig,
     ProjectConfig,
+    RestApiDestinationConfig,
     SyncConfig,
     SyncOptions,
 )
@@ -25,7 +26,7 @@ from drt.config.parser import load_project, load_syncs
 # ---------------------------------------------------------------------------
 
 def test_bearer_auth_discriminated() -> None:
-    config = DestinationConfig.model_validate({
+    config = RestApiDestinationConfig.model_validate({
         "type": "rest_api",
         "url": "https://example.com",
         "auth": {"type": "bearer", "token_env": "MY_TOKEN"},
@@ -35,7 +36,7 @@ def test_bearer_auth_discriminated() -> None:
 
 
 def test_api_key_auth_discriminated() -> None:
-    config = DestinationConfig.model_validate({
+    config = RestApiDestinationConfig.model_validate({
         "type": "rest_api",
         "url": "https://example.com",
         "auth": {"type": "api_key", "header": "X-Custom-Key", "value": "secret"},
@@ -45,7 +46,7 @@ def test_api_key_auth_discriminated() -> None:
 
 
 def test_basic_auth_discriminated() -> None:
-    config = DestinationConfig.model_validate({
+    config = RestApiDestinationConfig.model_validate({
         "type": "rest_api",
         "url": "https://example.com",
         "auth": {"type": "basic", "username_env": "USER", "password_env": "PASS"},
@@ -54,7 +55,7 @@ def test_basic_auth_discriminated() -> None:
 
 
 def test_no_auth() -> None:
-    config = DestinationConfig.model_validate({
+    config = RestApiDestinationConfig.model_validate({
         "type": "rest_api",
         "url": "https://example.com",
     })
@@ -129,7 +130,7 @@ def test_load_syncs(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def test_save_and_load_profile(tmp_path: Path) -> None:
-    profile = ProfileConfig(
+    profile = BigQueryProfile(
         type="bigquery",
         project="my-project",
         dataset="my_dataset",
@@ -155,10 +156,10 @@ def test_load_profile_missing_key(tmp_path: Path) -> None:
 
 
 def test_save_profile_appends(tmp_path: Path) -> None:
-    existing = ProfileConfig(type="bigquery", project="p1", dataset="d1")
+    existing = BigQueryProfile(type="bigquery", project="p1", dataset="d1")
     save_profile("dev", existing, config_dir=tmp_path)
 
-    new_profile = ProfileConfig(type="bigquery", project="p2", dataset="d2")
+    new_profile = BigQueryProfile(type="bigquery", project="p2", dataset="d2")
     save_profile("prod", new_profile, config_dir=tmp_path)
 
     profiles_path = tmp_path / "profiles.yml"

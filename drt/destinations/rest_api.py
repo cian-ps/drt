@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import httpx
 
-from drt.config.models import DestinationConfig, SyncOptions
+from drt.config.models import RestApiDestinationConfig, SyncOptions
 from drt.destinations.auth import AuthHandler
 from drt.destinations.base import SyncResult
 from drt.destinations.rate_limiter import RateLimiter
@@ -28,7 +28,7 @@ class RestApiDestination:
     def load(
         self,
         records: list[dict],
-        config: DestinationConfig,
+        config: RestApiDestinationConfig,
         sync_options: SyncOptions,
     ) -> SyncResult:
         result = DetailedSyncResult()

@@ -1,0 +1,25 @@
+name: sync_contacts
+description: "BigQueryの顧客データをHubSpot Contactsにupsert"
+model: ref('customers')
+destination:
+  type: hubspot
+  object_type: contacts
+  id_property: email
+  properties_template: |
+    {
+      "email":          "{{ row.email }}",
+      "firstname":      "{{ row.first_name }}",
+      "lastname":       "{{ row.last_name }}",
+      "company":        "{{ row.company_name }}",
+      "phone":          "{{ row.phone }}",
+      "lifecyclestage": "lead"
+    }
+  auth:
+    type: bearer
+    token_env: HUBSPOT_TOKEN
+sync:
+  mode: full
+  batch_size: 50
+  rate_limit:
+    requests_per_second: 9   # HubSpot: 100 req/10s
+  on_error: skip

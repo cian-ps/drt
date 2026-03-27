@@ -1,18 +1,18 @@
 """Pydantic models for drt project and sync configuration."""
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
 
 # ---------------------------------------------------------------------------
-# Auth
+# Auth (shared across destination types)
 # ---------------------------------------------------------------------------
 
 class BearerAuth(BaseModel):
     type: Literal["bearer"]
-    token: str | None = None          # 直書き（非推奨。env var を優先）
-    token_env: str | None = None      # env var 名 → os.environ から解決
+    token: str | None = None
+    token_env: str | None = None
 
 
 class ApiKeyAuth(BaseModel):
@@ -35,7 +35,7 @@ AuthConfig = Annotated[
 
 
 # ---------------------------------------------------------------------------
-# Source (inline — kept for backward compat; prefer profiles.yml)
+# Source config (inline — kept for backward compat; prefer profiles.yml)
 # ---------------------------------------------------------------------------
 
 class SourceConfig(BaseModel):
@@ -52,21 +52,66 @@ class SourceConfig(BaseModel):
 class ProjectConfig(BaseModel):
     name: str
     version: str = "0.1"
-    profile: str = "default"          # references ~/.drt/profiles.yml
+    profile: str = "default"
     source: SourceConfig | None = None  # optional; profile is authoritative
 
 
 # ---------------------------------------------------------------------------
-# Destination
+# Destination configs — discriminated union
 # ---------------------------------------------------------------------------
 
-class DestinationConfig(BaseModel):
+class RestApiDestinationConfig(BaseModel):
     type: Literal["rest_api"]
     url: str
     method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "POST"
     headers: dict[str, str] = Field(default_factory=dict)
     body_template: str | None = None
     auth: AuthConfig | None = None
+
+
+class SlackDestinationConfig(BaseModel):
+    type: Literal["slack"]
+    webhook_url: str | None = None
+    webhook_url_env: str | None = None
+    # Jinja2 template for Slack message. Supports plain text or Block Kit JSON.
+    # Plain text example: "New user: {{ row.name }} ({{ row.email }})"
+    # Block Kit: full JSON payload as template string
+    message_template: str = "{{ row }}"
+    # If True, treat message_template as a Block Kit JSON payload
+    block_kit: bool = False
+
+
+class GitHubActionsDestinationConfig(BaseModel):
+    type: Literal["github_actions"]
+    owner: str
+    repo: str
+    workflow_id: str          # filename (e.g. "deploy.yml") or workflow ID
+    ref: str = "main"         # branch/tag to run on
+    # Jinja2 template → JSON object for workflow inputs
+    # Example: '{"environment": "{{ row.env }}", "version": "{{ row.version }}"}'
+    inputs_template: str | None = None
+    auth: BearerAuth = Field(default_factory=lambda: BearerAuth(type="bearer"))
+
+
+class HubSpotDestinationConfig(BaseModel):
+    type: Literal["hubspot"]
+    object_type: Literal["contacts", "deals", "companies"] = "contacts"
+    # Property used as upsert key (contacts → email, deals → dealname, etc.)
+    id_property: str = "email"
+    # Jinja2 template → JSON object of HubSpot properties
+    # Example: '{"email": "{{ row.email }}", "firstname": "{{ row.name }}"}'
+    properties_template: str | None = None
+    auth: BearerAuth = Field(default_factory=lambda: BearerAuth(type="bearer"))
+
+
+# Discriminated union — add new destination types here
+DestinationConfig = Annotated[
+    RestApiDestinationConfig
+    | SlackDestinationConfig
+    | GitHubActionsDestinationConfig
+    | HubSpotDestinationConfig,
+    Field(discriminator="type"),
+]
 
 
 # ---------------------------------------------------------------------------

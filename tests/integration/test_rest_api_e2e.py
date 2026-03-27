@@ -14,8 +14,8 @@ from pathlib import Path
 
 import pytest
 
-from drt.config.credentials import ProfileConfig
-from drt.config.models import DestinationConfig, SyncConfig, SyncOptions, RateLimitConfig
+from drt.config.credentials import BigQueryProfile, ProfileConfig
+from drt.config.models import RestApiDestinationConfig, SyncConfig, SyncOptions, RateLimitConfig
 from drt.destinations.rest_api import RestApiDestination
 from drt.engine.sync import run_sync
 from tests.integration.conftest import FakeSource
@@ -25,8 +25,8 @@ from tests.integration.conftest import FakeSource
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _dest_config(httpserver, body_template: str | None = None, auth=None) -> DestinationConfig:
-    return DestinationConfig(
+def _dest_config(httpserver, body_template: str | None = None, auth=None) -> RestApiDestinationConfig:
+    return RestApiDestinationConfig(
         type="rest_api",
         url=httpserver.url_for("/webhook"),
         method="POST",
@@ -49,8 +49,8 @@ def _sync(dest: DestinationConfig, rate_limit_rps: int = 100, on_error: str = "s
     )
 
 
-def _profile() -> ProfileConfig:
-    return ProfileConfig(type="bigquery", project="p", dataset="d")
+def _profile() -> BigQueryProfile:
+    return BigQueryProfile(type="bigquery", project="p", dataset="d")
 
 
 # ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from drt.config.credentials import ProfileConfig
+from drt.config.credentials import BigQueryProfile, ProfileConfig
 from drt.config.models import DestinationConfig, SyncConfig, SyncOptions
 
 
@@ -24,8 +24,8 @@ class FakeSource:
 
 
 @pytest.fixture
-def profile() -> ProfileConfig:
-    return ProfileConfig(type="bigquery", project="test_project", dataset="test_dataset")
+def profile() -> BigQueryProfile:
+    return BigQueryProfile(type="bigquery", project="test_project", dataset="test_dataset")
 
 
 @pytest.fixture

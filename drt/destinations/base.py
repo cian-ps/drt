@@ -6,7 +6,7 @@ Designed with Rust-compatibility in mind: clear boundaries, no magic.
 from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
 
-from drt.config.models import DestinationConfig, SyncOptions
+from drt.config.models import SyncOptions
 
 
 @dataclass
@@ -30,7 +30,7 @@ class Destination(Protocol):
     def load(  # type: ignore[empty-body]
         self,
         records: list[dict],
-        config: DestinationConfig,
+        config: object,  # specific config type per destination
         sync_options: SyncOptions,
     ) -> SyncResult:
         """Send a batch of records to the destination."""

@@ -76,9 +76,7 @@ def run(
     """Run sync(s) defined in the project."""
     from drt.config.credentials import load_profile
     from drt.config.parser import load_project, load_syncs
-    from drt.destinations.rest_api import RestApiDestination
     from drt.engine.sync import run_sync
-    from drt.sources.bigquery import BigQuerySource
     from drt.state.manager import StateManager
 
     try:
@@ -104,12 +102,12 @@ def run(
             print_error(f"No sync named '{select}' found.")
             raise typer.Exit(1)
 
-    source = BigQuerySource()
+    source = _get_source(profile)
     state_mgr = StateManager(Path("."))
     had_errors = False
 
     for sync in syncs:
-        dest = RestApiDestination()
+        dest = _get_destination(sync)
         print_sync_start(sync.name, dry_run)
         t0 = time.monotonic()
         try:
@@ -188,3 +186,46 @@ def status() -> None:
 
     states = StateManager(Path(".")).get_all()
     print_status_table(states)
+
+
+# ---------------------------------------------------------------------------
+# Source / Destination factories
+# ---------------------------------------------------------------------------
+
+def _get_source(profile):  # type: ignore[return]
+    from drt.config.credentials import BigQueryProfile, DuckDBProfile, PostgresProfile
+    from drt.sources.bigquery import BigQuerySource
+    from drt.sources.duckdb import DuckDBSource
+    from drt.sources.postgres import PostgresSource
+
+    if isinstance(profile, BigQueryProfile):
+        return BigQuerySource()
+    if isinstance(profile, DuckDBProfile):
+        return DuckDBSource()
+    if isinstance(profile, PostgresProfile):
+        return PostgresSource()
+    raise ValueError(f"Unsupported source type: {type(profile)}")
+
+
+def _get_destination(sync):  # type: ignore[return]
+    from drt.config.models import (
+        GitHubActionsDestinationConfig,
+        HubSpotDestinationConfig,
+        RestApiDestinationConfig,
+        SlackDestinationConfig,
+    )
+    from drt.destinations.github_actions import GitHubActionsDestination
+    from drt.destinations.hubspot import HubSpotDestination
+    from drt.destinations.rest_api import RestApiDestination
+    from drt.destinations.slack import SlackDestination
+
+    dest = sync.destination
+    if isinstance(dest, RestApiDestinationConfig):
+        return RestApiDestination()
+    if isinstance(dest, SlackDestinationConfig):
+        return SlackDestination()
+    if isinstance(dest, GitHubActionsDestinationConfig):
+        return GitHubActionsDestination()
+    if isinstance(dest, HubSpotDestinationConfig):
+        return HubSpotDestination()
+    raise ValueError(f"Unsupported destination type: {dest.type}")

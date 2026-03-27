@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from drt.config.credentials import ProfileConfig
+from drt.config.credentials import BigQueryProfile, ProfileConfig
 from drt.config.models import DestinationConfig, SyncConfig, SyncOptions
 from drt.destinations.base import SyncResult
 from drt.engine.sync import batch, run_sync
@@ -51,8 +51,8 @@ class FakeDestination:
         return result
 
 
-def _make_profile() -> ProfileConfig:
-    return ProfileConfig(type="bigquery", project="p", dataset="d")
+def _make_profile() -> BigQueryProfile:
+    return BigQueryProfile(type="bigquery", project="p", dataset="d")
 
 
 def _make_sync(batch_size: int = 10, on_error: str = "fail") -> SyncConfig:

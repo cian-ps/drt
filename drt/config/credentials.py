@@ -3,38 +3,43 @@
 Credentials never live in drt_project.yml (which is Git-safe).
 They live in ~/.drt/profiles.yml (outside version control).
 
-Resolution order for secret values:
-  explicit value → env var → raise
-
 Example ~/.drt/profiles.yml:
+
     dev:
       type: bigquery
       project: my-gcp-project
       dataset: analytics
       method: application_default
 
-    prod:
-      type: bigquery
-      project: my-gcp-project
-      dataset: analytics
-      method: keyfile
-      keyfile: ~/.config/gcloud/service_account.json
+    local:
+      type: duckdb
+      database: ./data/warehouse.duckdb
+
+    pg:
+      type: postgres
+      host: localhost
+      port: 5432
+      dbname: analytics
+      user: analyst
+      password_env: PG_PASSWORD
 """
 
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Union
 
 import yaml
 
 
-@dataclass
-class ProfileConfig:
-    """Resolved source profile — credentials ready to use."""
+# ---------------------------------------------------------------------------
+# Source profile types
+# ---------------------------------------------------------------------------
 
+@dataclass
+class BigQueryProfile:
     type: Literal["bigquery"]
     project: str
     dataset: str
@@ -42,21 +47,59 @@ class ProfileConfig:
     keyfile: str | None = None
 
 
+@dataclass
+class DuckDBProfile:
+    type: Literal["duckdb"]
+    database: str = ":memory:"  # path or :memory:
+
+
+@dataclass
+class PostgresProfile:
+    type: Literal["postgres"]
+    host: str = "localhost"
+    port: int = 5432
+    dbname: str = ""
+    user: str = ""
+    password_env: str | None = None   # env var name
+    password: str | None = None       # explicit (non-recommended)
+
+
+# Union type — used throughout the codebase
+ProfileConfig = Union[BigQueryProfile, DuckDBProfile, PostgresProfile]
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
 def _config_dir(override: Path | None = None) -> Path:
     return override if override is not None else Path.home() / ".drt"
 
+
+def resolve_env(value: str | None, env_var: str | None) -> str | None:
+    """Resolve a secret value: explicit value → env var → None."""
+    if value is not None:
+        return value
+    if env_var is not None:
+        return os.environ.get(env_var)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Load / Save
+# ---------------------------------------------------------------------------
 
 def load_profile(profile_name: str, config_dir: Path | None = None) -> ProfileConfig:
     """Load a named profile from ~/.drt/profiles.yml.
 
     Args:
-        profile_name: Key in profiles.yml (e.g. "dev", "prod").
+        profile_name: Key in profiles.yml (e.g. "dev", "local").
         config_dir: Override ~/.drt for testing.
 
     Raises:
         FileNotFoundError: profiles.yml does not exist.
-        KeyError: profile_name not found in profiles.yml.
-        ValueError: Required fields missing or type unsupported.
+        KeyError: profile_name not found.
+        ValueError: Unknown source type or missing required fields.
     """
     profiles_path = _config_dir(config_dir) / "profiles.yml"
     if not profiles_path.exists():
@@ -72,20 +115,39 @@ def load_profile(profile_name: str, config_dir: Path | None = None) -> ProfileCo
         available = ", ".join(data.keys()) or "(none)"
         raise KeyError(
             f"Profile '{profile_name}' not found in {profiles_path}. "
-            f"Available profiles: {available}"
+            f"Available: {available}"
         )
 
     raw = data[profile_name]
     source_type = raw.get("type")
-    if source_type != "bigquery":
-        raise ValueError(f"Unsupported source type '{source_type}'. Currently only 'bigquery' is supported.")
 
-    return ProfileConfig(
-        type="bigquery",
-        project=raw["project"],
-        dataset=raw["dataset"],
-        method=raw.get("method", "application_default"),
-        keyfile=raw.get("keyfile"),
+    if source_type == "bigquery":
+        return BigQueryProfile(
+            type="bigquery",
+            project=raw["project"],
+            dataset=raw["dataset"],
+            method=raw.get("method", "application_default"),
+            keyfile=raw.get("keyfile"),
+        )
+    if source_type == "duckdb":
+        return DuckDBProfile(
+            type="duckdb",
+            database=raw.get("database", ":memory:"),
+        )
+    if source_type == "postgres":
+        return PostgresProfile(
+            type="postgres",
+            host=raw.get("host", "localhost"),
+            port=int(raw.get("port", 5432)),
+            dbname=raw.get("dbname", ""),
+            user=raw.get("user", ""),
+            password_env=raw.get("password_env"),
+            password=raw.get("password"),
+        )
+
+    raise ValueError(
+        f"Unsupported source type '{source_type}'. "
+        "Supported: bigquery, duckdb, postgres"
     )
 
 
@@ -94,10 +156,7 @@ def save_profile(
     profile: ProfileConfig,
     config_dir: Path | None = None,
 ) -> Path:
-    """Append or update a profile in ~/.drt/profiles.yml.
-
-    Returns the path to the profiles file.
-    """
+    """Append or update a profile in ~/.drt/profiles.yml."""
     dir_path = _config_dir(config_dir)
     dir_path.mkdir(parents=True, exist_ok=True)
     profiles_path = dir_path / "profiles.yml"
@@ -107,30 +166,32 @@ def save_profile(
         with profiles_path.open() as f:
             data = yaml.safe_load(f) or {}
 
-    entry: dict = {
-        "type": profile.type,
-        "project": profile.project,
-        "dataset": profile.dataset,
-        "method": profile.method,
-    }
-    if profile.keyfile:
-        entry["keyfile"] = profile.keyfile
+    if isinstance(profile, BigQueryProfile):
+        entry: dict = {
+            "type": "bigquery",
+            "project": profile.project,
+            "dataset": profile.dataset,
+            "method": profile.method,
+        }
+        if profile.keyfile:
+            entry["keyfile"] = profile.keyfile
+    elif isinstance(profile, DuckDBProfile):
+        entry = {"type": "duckdb", "database": profile.database}
+    elif isinstance(profile, PostgresProfile):
+        entry = {
+            "type": "postgres",
+            "host": profile.host,
+            "port": profile.port,
+            "dbname": profile.dbname,
+            "user": profile.user,
+        }
+        if profile.password_env:
+            entry["password_env"] = profile.password_env
+    else:
+        raise ValueError(f"Unknown profile type: {type(profile)}")
 
     data[profile_name] = entry
-
     with profiles_path.open("w") as f:
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
     return profiles_path
-
-
-def resolve_env(value: str | None, env_var: str | None) -> str | None:
-    """Resolve a secret value: explicit value takes priority, then env var.
-
-    Returns None if both are unset.
-    """
-    if value is not None:
-        return value
-    if env_var is not None:
-        return os.environ.get(env_var)
-    return None

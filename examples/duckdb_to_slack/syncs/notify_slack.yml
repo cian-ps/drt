@@ -1,0 +1,13 @@
+name: notify_slack
+description: "新規ユーザーをSlackに通知（DuckDB → Slack）"
+model: ref('new_users')
+destination:
+  type: slack
+  webhook_url_env: SLACK_WEBHOOK_URL
+  message_template: ":wave: New user: *{{ row.name }}* ({{ row.email }})"
+sync:
+  mode: full
+  batch_size: 1       # Slack: 1メッセージずつ送信
+  rate_limit:
+    requests_per_second: 2
+  on_error: skip

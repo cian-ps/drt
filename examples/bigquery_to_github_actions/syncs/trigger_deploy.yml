@@ -1,0 +1,24 @@
+name: trigger_deploy
+description: "承認済みデプロイをBigQueryから読んでGitHub Actionsをトリガー"
+model: ref('approved_deployments')
+destination:
+  type: github_actions
+  owner: myorg
+  repo: myapp
+  workflow_id: deploy.yml
+  ref: main
+  inputs_template: |
+    {
+      "environment": "{{ row.env }}",
+      "version":     "{{ row.version }}",
+      "triggered_by": "drt"
+    }
+  auth:
+    type: bearer
+    token_env: GITHUB_TOKEN
+sync:
+  mode: full
+  batch_size: 1         # 1デプロイずつトリガー
+  rate_limit:
+    requests_per_second: 2
+  on_error: fail        # デプロイ失敗は即停止

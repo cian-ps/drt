@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from drt.config.credentials import ProfileConfig
+from drt.config.credentials import BigQueryProfile, ProfileConfig
 from drt.engine.resolver import parse_ref, resolve_model_ref
 
 
-def _profile(dataset: str = "my_dataset") -> ProfileConfig:
-    return ProfileConfig(type="bigquery", project="my_project", dataset=dataset)
+def _profile(dataset: str = "my_dataset") -> BigQueryProfile:
+    return BigQueryProfile(type="bigquery", project="my_project", dataset=dataset)
 
 
 # ---------------------------------------------------------------------------
