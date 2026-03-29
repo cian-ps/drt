@@ -131,7 +131,7 @@ drt status                  # show recent sync status
 | **Destination** | Slack Incoming Webhook | ✅ v0.1 | (core) |
 | **Destination** | GitHub Actions (workflow_dispatch) | ✅ v0.1 | (core) |
 | **Destination** | HubSpot (Contacts / Deals / Companies) | ✅ v0.1 | (core) |
-| **Destination** | Google Sheets | 🗓 v0.3 | (core) |
+| **Destination** | Google Sheets | 🗓 v0.4 | (core) |
 | **Destination** | Salesforce | 🗓 planned | (core) |
 | **Destination** | Notion | 🗓 planned | (core) |
 | **Destination** | Linear | 🗓 planned | (core) |
@@ -144,9 +144,9 @@ drt status                  # show recent sync status
 | Version | Focus |
 |---------|-------|
 | **v0.1** ✅ | BigQuery / DuckDB / Postgres sources · REST API / Slack / GitHub Actions / HubSpot destinations · CLI · dry-run |
-| v0.2 | Incremental sync (`updated_at` watermark), state persistence improvements |
-| v0.3 | Scheduling (cron-style), Google Sheets connector, Snowflake source |
-| v0.4 | MCP Server (`uvx drt mcp run`), AI Skills |
+| v0.2 | Incremental sync (`updated_at` watermark), retry logic, row-level error details |
+| v0.3 | MCP Server (`uvx drt mcp run`), AI Skills |
+| v0.4 | Dagster / Airflow integration, Google Sheets connector, Snowflake source |
 | v1.x | Rust engine (PyO3) |
 
 ---
