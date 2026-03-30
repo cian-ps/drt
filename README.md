@@ -217,9 +217,9 @@ Copy the files from `.claude/commands/` into your drt project's `.claude/command
 
 drt is designed to work alongside, not against, the modern data stack:
 
-```
-dlt (load) → dbt (transform) → drt (activate)
-```
+<p align="center">
+  <img src="docs/assets/ecosystem.png" alt="drt ecosystem — dlt load, dbt transform, drt activate" width="700">
+</p>
 
 ---
 
