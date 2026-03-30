@@ -195,8 +195,9 @@ Copy the files from `.claude/commands/` into your drt project's `.claude/command
 | **Destination** | Slack Incoming Webhook | ✅ v0.1 | (core) |
 | **Destination** | GitHub Actions (workflow_dispatch) | ✅ v0.1 | (core) |
 | **Destination** | HubSpot (Contacts / Deals / Companies) | ✅ v0.1 | (core) |
-| **Destination** | Google Sheets | 🗓 v0.4 | (core) |
-| **Destination** | Salesforce | 🗓 planned | (core) |
+| **Destination** | Google Sheets | 🗓 v0.4 | `pip install drt-core[sheets]` |
+| **Destination** | CSV / JSON file | 🗓 v0.5 | (core) |
+| **Destination** | Salesforce | 🗓 v0.6 | `pip install drt-core[salesforce]` |
 | **Destination** | Notion | 🗓 planned | (core) |
 | **Destination** | Linear | 🗓 planned | (core) |
 | **Destination** | SendGrid | 🗓 planned | (core) |
@@ -208,9 +209,11 @@ Copy the files from `.claude/commands/` into your drt project's `.claude/command
 | Version | Focus |
 |---------|-------|
 | **v0.1** ✅ | BigQuery / DuckDB / Postgres sources · REST API / Slack / GitHub Actions / HubSpot destinations · CLI · dry-run |
-| **v0.2** ✅ | Incremental sync (`cursor_field` watermark) · retry config per-sync · 53 tests |
-| **v0.3** ✅ | MCP Server (`drt mcp run`) · AI Skills for Claude Code · LLM-readable docs · row-level errors |
-| v0.4 | Dagster / Airflow integration · Google Sheets connector · Snowflake source |
+| **v0.2** ✅ | Incremental sync (`cursor_field` watermark) · retry config per-sync |
+| **v0.3** ✅ | MCP Server (`drt mcp run`) · AI Skills for Claude Code · LLM-readable docs · row-level errors · security hardening |
+| v0.4 | Dagster integration · Google Sheets destination · dbt post-hook · examples |
+| v0.5 | Snowflake source · CSV/JSON destination · test coverage |
+| v0.6 | Salesforce destination · Airflow integration |
 | v1.x | Rust engine (PyO3) |
 
 ---

@@ -50,12 +50,12 @@ make fmt      # ruff format + fix
 
 ## Current Status
 
-- **v0.3.3 released** — MCP Server, AI Skills (plugin marketplace), LLM docs, row-level errors, BigQuery location support
+- **v0.3.3 released** — MCP Server, AI Skills (plugin marketplace), LLM docs, row-level errors, BigQuery location support, security hardening (SQL injection fix, HTTP timeout, auth validation, state corruption recovery)
 - CLI fully wired: `init`, `run`, `list`, `validate`, `status`, `mcp run`
 - Sources: BigQuery, DuckDB, PostgreSQL
 - Destinations: REST API, Slack, GitHub Actions, HubSpot
 - MCP Server: `drt mcp run` via `drt-core[mcp]` (FastMCP)
-- Integration tests use `pytest-httpserver` (no real HTTP mocking)
+- 84 tests, integration tests use `pytest-httpserver` (no real HTTP mocking)
 
 ## What NOT to do
 
@@ -69,5 +69,8 @@ make fmt      # ruff format + fix
 See the roadmap table in README.md. The short version:
 - v0.1 ✅: BigQuery → REST API working end-to-end
 - v0.2 ✅: Incremental sync + retry from config
-- v0.3 ✅: MCP Server + AI Skills for Claude Code + LLM-readable docs + row-level errors
+- v0.3 ✅: MCP Server + AI Skills for Claude Code + LLM-readable docs + row-level errors + security hardening
+- v0.4: Dagster integration + Google Sheets destination + dbt post-hook + examples
+- v0.5: Snowflake source + CSV/JSON destination + test coverage
+- v0.6: Salesforce destination + Airflow integration
 - v1.x: Rust engine via PyO3

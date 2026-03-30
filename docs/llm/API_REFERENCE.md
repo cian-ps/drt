@@ -21,6 +21,7 @@ default:
   type: bigquery            # "bigquery" | "duckdb" | "postgres"
   project: my-gcp-project   # BigQuery: GCP project ID
   dataset: analytics        # BigQuery: dataset name
+  location: US              # optional: "US" (default), "EU", "asia-northeast1", etc.
   method: application_default  # "application_default" | "keyfile"
   keyfile: ~/.drt/sa.json   # only when method=keyfile
 

@@ -14,6 +14,7 @@ dlt (load into DWH) → dbt (transform) → drt (activate out of DWH)
 - **Tagline:** "Reverse ETL for the code-first data stack"
 - **Install:** `pip install drt-core` or `uv add drt-core`
 - **Package name:** `drt-core` (PyPI) — CLI command is `drt`
+- **Current version:** v0.3.3
 
 ## What drt is NOT
 
@@ -52,7 +53,7 @@ my-project/
 
 | Source | Extra | Notes |
 |--------|-------|-------|
-| BigQuery | `drt-core[bigquery]` | Uses ADC or keyfile |
+| BigQuery | `drt-core[bigquery]` | Uses ADC or keyfile. Supports `location` (e.g. `"EU"`, `"asia-northeast1"`) |
 | DuckDB | (core) | Local `.duckdb` file |
 | PostgreSQL | `drt-core[postgres]` | Connection string via env |
 
@@ -63,6 +64,7 @@ default:
   type: bigquery
   project: my-gcp-project
   dataset: analytics
+  location: US             # optional: "US" (default), "EU", "asia-northeast1", etc.
 ```
 
 ## Destinations (where data goes)
