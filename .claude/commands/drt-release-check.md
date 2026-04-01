@@ -40,8 +40,23 @@ Check that all documentation and version references are consistent before a drt 
 
 10. **CI** — verify all tests pass: `make test && make lint`
 
-11. **GitHub** — verify:
+11. **GitHub Milestone** — verify:
     - All milestone issues are closed or moved
     - No open PRs blocking the release
+
+12. **GitHub Release — drt-core** — create (or verify exists):
+    - `gh release create v{VERSION}` with title `v{VERSION}`
+    - Release notes: "What's New" sections matching CHANGELOG entry
+    - Mark as `--latest` for the primary release
+    - Include `Full Changelog` compare link
+
+13. **GitHub Release — dagster-drt** (if version bumped) — create (or verify exists):
+    - `gh release create dagster-drt-v{VERSION} --latest=false` with title `dagster-drt v{VERSION}`
+    - Release notes: features, requirements, PyPI link
+    - **MUST pass `--latest=false`** (gh defaults to auto-detect by date, which will steal Latest from drt-core)
+
+14. **Verify Latest flag** — after all releases are created:
+    - `gh release list --limit 5` — confirm drt-core `v{VERSION}` shows `Latest`, dagster-drt does not
+    - If wrong: `gh release edit dagster-drt-v{VERSION} --latest=false && gh release edit v{VERSION} --latest`
 
 Report any inconsistencies found and suggest fixes.
