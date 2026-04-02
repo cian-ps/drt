@@ -1,5 +1,7 @@
 [English](./README.md) | [日本語](./README.ja.md)
 
+> **Note:** この翻訳は最新でない可能性があります。正確な情報は [README.md](README.md) を参照してください。
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/drt-hub/.github/main/profile/assets/logo-dark.svg">
   <img src="https://raw.githubusercontent.com/drt-hub/.github/main/profile/assets/logo.svg" alt="drt logo" width="200">
@@ -7,15 +9,15 @@
 
 # drt — data reverse tool
 
-> Reverse ETL for the code-first data stack.
+> コードファーストのデータスタック向けのリバースETLツール。
 
 [![CI](https://github.com/drt-hub/drt/actions/workflows/ci.yml/badge.svg)](https://github.com/drt-hub/drt/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/drt-core)](https://pypi.org/project/drt-core/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 [![Python](https://img.shields.io/pypi/pyversions/drt-core)](https://pypi.org/project/drt-core/)
 
-**drt** syncs data from your data warehouse to external services — declaratively, via YAML and CLI.
-Think `dbt run` → `drt run`. Same developer experience, opposite data direction.
+**drt** は、YAMLとCLIを使って、データウェアハウスから外部サービスへデータを同期します（宣言的に設定可能）。
+`dbt run` → `drt run`のイメージです。同じ開発体験で、データの流れが逆になります。
 
 <p align="center">
   <img src="docs/assets/quickstart.gif" alt="drt quickstart demo" width="700">
@@ -28,37 +30,37 @@ drt init && drt run
 
 ---
 
-## Why drt?
+## なぜdrtなのか？
 
-| Problem | drt's answer |
+| 問題 | drtの回答 |
 |---------|-------------|
-| Census/Hightouch are expensive SaaS | Free, self-hosted OSS |
-| GUI-first tools don't fit CI/CD | CLI + YAML, Git-native |
-| dbt/dlt ecosystem has no reverse leg | Same philosophy, same DX |
-| LLM/MCP era makes GUI SaaS overkill | LLM-native by design |
+| Census / Hightouch は高価なSaaS | 無料のセルフホスト型OSS |
+| GUI優先のツールはCI/CDには適さない | CLI + YAML、Gitネイティブ |
+| dbt/dltエコシステムには逆方向の仕組みがない | 同じ哲学、同じ開発体験（DX） |
+| LLM/MCP時代にはGUI SaaSは過剰 | LLM前提で設計 |
 
 ---
 
-## Quickstart
+## クイックスタート
 
-No cloud accounts needed — runs locally with DuckDB in about 5 minutes.
+クラウドアカウントは不要です。DuckDBを使って、ローカル環境で約5分で実行できます。
 
-### 1. Install
+### 1. インストール
 
 ```bash
 pip install drt-core
 ```
 
-> For cloud sources: `pip install drt-core[bigquery]`, `drt-core[postgres]`, etc.
+> クラウドソースの場合：`pip install drt-core[bigquery]`、`drt-core[postgres]` など。
 
-### 2. Set up a project
+### 2. プロジェクトのセットアップ
 
 ```bash
 mkdir my-drt-project && cd my-drt-project
 drt init   # select "duckdb" as source
 ```
 
-### 3. Create sample data
+### 3. サンプルデータの作成
 
 ```bash
 python -c "
@@ -73,7 +75,7 @@ c.close()
 "
 ```
 
-### 4. Create a sync
+### 4. 同期の作成
 
 ```yaml
 # syncs/post_users.yml
@@ -94,7 +96,7 @@ sync:
   on_error: fail
 ```
 
-### 5. Run
+### 5. 実行
 
 ```bash
 drt run --dry-run   # preview, no data sent
@@ -102,11 +104,11 @@ drt run             # run for real
 drt status          # check results
 ```
 
-> See [examples/](examples/) for more: Slack, Google Sheets, HubSpot, GitHub Actions, etc.
+> 詳細は [examples/](examples/) を参照してください（Slack、Google Sheets、HubSpot、GitHub Actions など）。
 
 ---
 
-## CLI Reference
+## CLIリファレンス
 
 ```bash
 drt init                    # initialize project
@@ -123,9 +125,9 @@ drt mcp run                 # start MCP server (requires drt-core[mcp])
 
 ---
 
-## MCP Server
+## MCPサーバー
 
-Connect drt to Claude, Cursor, or any MCP-compatible client so you can run syncs, check status, and validate configs without leaving your AI environment.
+drtをClaude、Cursor、またはMCP互換クライアントに接続することで、AI環境から離れることなく、同期の実行、ステータスの確認、設定の検証が可能になります。
 
 ```bash
 pip install drt-core[mcp]
@@ -145,48 +147,48 @@ drt mcp run
 }
 ```
 
-**Available MCP tools:**
+**利用可能なMCPツール：**
 
-| Tool | What it does |
+| ツール | 機能 |
 |------|-------------|
-| `drt_list_syncs` | List all sync definitions |
-| `drt_run_sync` | Run a sync (supports `dry_run`) |
-| `drt_get_status` | Get last run result(s) |
-| `drt_validate` | Validate sync YAML configs |
-| `drt_get_schema` | Return JSON Schema for config files |
+| `drt_list_syncs` | 同期定義の一覧を表示 |
+| `drt_run_sync` | 同期を実行（`dry_run`対応） |
+| `drt_get_status` | 前回の実行結果を取得 |
+| `drt_validate` | 同期YAML設定を検証 |
+| `drt_get_schema` | 設定ファイルのJSONスキーマを返す |
 
 ---
 
-## AI Skills for Claude Code
+## Claude CodeのためのAIスキル
 
-Install the official Claude Code skills to generate YAML, debug failures, and migrate from other tools — all from the chat interface.
+Claude Codeの公式スキルをインストールすると、チャットインターフェースからYAMLの生成、エラーのデバッグ、他のツールからの移行が可能になります。
 
-### Install via Plugin Marketplace (recommended)
+### プラグインマーケットプレイスからインストール（推奨）
 
 ```bash
 /plugin marketplace add drt-hub/drt
 /plugin install drt@drt-hub
 ```
 
-> **Tip:** Enable auto-update so you always get the latest skills when drt is updated:
+> **ヒント:** drtが更新された際に常に最新のスキルを利用できるよう、自動更新を有効にしてください：
 > `/plugin` → Marketplaces → drt-hub → Enable auto-update
 
-### Manual install (slash commands)
+### 手動インストール（スラッシュコマンド）
 
-Copy the files from `.claude/commands/` into your drt project's `.claude/commands/` directory.
+`.claude/commands/`のファイルをdrtプロジェクトの`.claude/commands/`ディレクトリにコピーしてください。
 
-| Skill | Trigger | What it does |
+| スキル | トリガー | 説明 |
 |-------|---------|-------------|
-| `/drt-create-sync` | "create a sync" | Generates valid sync YAML from your intent |
-| `/drt-debug` | "sync failed" | Diagnoses errors and suggests fixes |
-| `/drt-init` | "set up drt" | Guides through project initialization |
-| `/drt-migrate` | "migrate from Census" | Converts existing configs to drt YAML |
+| `/drt-create-sync` | "create a sync" | インテントから有効な同期YAMLを生成 |
+| `/drt-debug` | "sync failed" | エラーを診断し、修正方法を提案 |
+| `/drt-init` | "set up drt" | プロジェクト初期化を案内 |
+| `/drt-migrate` | "migrate from Census" | 既存の設定をdrt YAMLに変換 |
 
 ---
 
-## Connectors
+## コネクタ
 
-| Type | Name | Status | Install |
+| 種類 | 名前 | ステータス | インストール |
 |------|------|--------|---------|
 | **Source** | BigQuery | ✅ v0.1 | `pip install drt-core[bigquery]` |
 | **Source** | DuckDB | ✅ v0.1 | (core) |
@@ -214,12 +216,12 @@ Copy the files from `.claude/commands/` into your drt project's `.claude/command
 
 ---
 
-## Roadmap
+## ロードマップ
 
-> **Detailed plans & progress → [GitHub Milestones](https://github.com/drt-hub/drt/milestones)**
-> **Looking to contribute? → [Good First Issues](https://github.com/drt-hub/drt/issues?q=is%3Aopen+label%3A%22good+first+issue%22)**
+> **詳細な計画と進捗 → [GitHub Milestones](https://github.com/drt-hub/drt/milestones)**
+> **貢献したい方はこちら → [Good First Issues](https://github.com/drt-hub/drt/issues?q=is%3Aopen+label%3A%22good+first+issue%22)**
 
-| Version | Focus |
+| バージョン | 内容 |
 |---------|-------|
 | **v0.1** ✅ | BigQuery / DuckDB / Postgres sources · REST API / Slack / GitHub Actions / HubSpot destinations · CLI · dry-run |
 | **v0.2** ✅ | Incremental sync (`cursor_field` watermark) · retry config per-sync |
@@ -231,10 +233,9 @@ Copy the files from `.claude/commands/` into your drt project's `.claude/command
 
 ---
 
-## Orchestration: dagster-drt
+## オーケストレーション: dagster-drt
 
-Community-maintained [Dagster](https://dagster.io/) integration. Expose drt syncs as Dagster assets with full observability.
-
+コミュニティによって維持管理されている [Dagster](https://dagster.io/) との統合。 drtの同期を、可観測性を備えた Dagster アセットとして公開します。
 ```bash
 pip install dagster-drt
 ```
@@ -255,13 +256,13 @@ defs = Definitions(
 )
 ```
 
-See [dagster-drt README](integrations/dagster-drt/README.md) for full API docs (Translator, DrtConfig dry-run, MaterializeResult).
+詳細なAPIドキュメント（Translator、DrtConfigのドライラン、MaterializeResult）については、 [dagster-drt README](integrations/dagster-drt/README.md) を参照してください。
 
 ---
 
-## Ecosystem
+## エコシステム
 
-drt is designed to work alongside, not against, the modern data stack:
+drtは最新のデータスタックと競合するのではなく、共存するように設計されています:
 
 <p align="center">
   <img src="docs/assets/ecosystem.png" alt="drt ecosystem — dlt load, dbt transform, drt activate" width="700">
@@ -269,21 +270,19 @@ drt is designed to work alongside, not against, the modern data stack:
 
 ---
 
-## Contributing
+## コントリビュート
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](CONTRIBUTING.md)を参照してください。
 
-## Disclaimer
+## 免責事項
 
-drt is an independent open-source project and is **not affiliated with,
-endorsed by, or sponsored by** dbt Labs, dlt-hub, or any other company.
+drtは独立したオープンソースプロジェクトであり、dbt Labs、dlt-hub、またはその他のいかなる企業とも提携、承認、または後援関係にありません。
 
-"dbt" is a registered trademark of dbt Labs, Inc.
-"dlt" is a project maintained by dlt-hub.
+「dbt」はdbt Labs, Inc.の登録商標です。
+「dlt」はdlt-hubによってメンテナンスされているプロジェクトです。
 
-drt is designed to complement these tools as part of the modern data stack,
-but is a separate project with its own codebase and maintainers.
+drtは現代のデータスタックの一部としてこれらのツールを補完するように設計されていますが、独自のコードベースとメンテナーを持つ独立したプロジェクトです。
 
-## License
+## ライセンス
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache 2.0 — [LICENSE](LICENSE)を参照してください。
