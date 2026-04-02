@@ -36,6 +36,15 @@ def _fake_connection() -> MagicMock:
     return conn
 
 
+def test_redshift_profile_defaults() -> None:
+    """RedshiftProfile has sensible defaults (port=5439, not Postgres 5432)."""
+    profile = RedshiftProfile(type="redshift")
+    assert profile.port == 5439
+    assert profile.schema == "public"
+    assert profile.host == ""
+    assert profile.dbname == ""
+
+
 def test_redshift_source_implements_source_protocol() -> None:
     source = RedshiftSource()
     assert isinstance(source, Source)
