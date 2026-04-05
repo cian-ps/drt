@@ -5,6 +5,6 @@ services:
       args:
         DRT_EXTRAS: "postgres"
     volumes:
-      - ~/.drt/profiles.yml:/root/.drt/profiles.yml:ro
+      - ${HOME}/.drt/profiles.yml:/home/drt/.drt/profiles.yml:ro
       - ./:/app
     command: ["run"]

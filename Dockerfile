@@ -9,12 +9,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 ARG DRT_EXTRAS=""
+ARG DRT_VERSION="0.4.3"
 
 RUN if [ -z "$DRT_EXTRAS" ]; then \
-      pip install --no-cache-dir drt-core; \
+      pip install --no-cache-dir drt-core==${DRT_VERSION}; \
     else \
-      pip install --no-cache-dir "drt-core[$DRT_EXTRAS]"; \
+      pip install --no-cache-dir "drt-core[${DRT_EXTRAS}]==${DRT_VERSION}"; \
     fi
+
+RUN useradd --create-home drt
+USER drt
 
 ENTRYPOINT ["drt"]
 CMD ["--help"]
