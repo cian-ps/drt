@@ -50,6 +50,7 @@ class ClickHouseDestination:
         try:
             columns = list(records[0].keys())
 
+            # TODO: batch insert with fallback to row-by-row on error
             for i, record in enumerate(records):
                 try:
                     row = [[record.get(c) for c in columns]]
