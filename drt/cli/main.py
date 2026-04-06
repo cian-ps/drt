@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         SQLiteProfile,
     )
     from drt.config.models import SyncConfig
+    from drt.destinations.clickhouse import ClickHouseDestination
     from drt.destinations.discord import DiscordDestination
     from drt.destinations.github_actions import GitHubActionsDestination
     from drt.destinations.google_sheets import GoogleSheetsDestination
@@ -330,8 +331,10 @@ def _get_destination(
     | PostgresDestination
     | MySQLDestination
     | TeamsDestination
+    | ClickHouseDestination
 ):
     from drt.config.models import (
+        ClickHouseDestinationConfig,
         DiscordDestinationConfig,
         GitHubActionsDestinationConfig,
         GoogleSheetsDestinationConfig,
@@ -342,6 +345,7 @@ def _get_destination(
         SlackDestinationConfig,
         TeamsDestinationConfig,
     )
+    from drt.destinations.clickhouse import ClickHouseDestination
     from drt.destinations.discord import DiscordDestination
     from drt.destinations.github_actions import GitHubActionsDestination
     from drt.destinations.hubspot import HubSpotDestination
@@ -373,4 +377,6 @@ def _get_destination(
         from drt.destinations.teams import TeamsDestination
 
         return TeamsDestination()
+    if isinstance(dest, ClickHouseDestinationConfig):
+        return ClickHouseDestination()
     raise ValueError(f"Unsupported destination type: {dest.type}")
