@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Parquet file destination** (#171): Write sync results to local Parquet files using pandas + pyarrow. Supports snappy/gzip/zstd compression and partition columns. 11 unit tests. Install: `pip install drt-core[parquet]`.
+- **Parquet file destination** (#171): Write sync results to local Parquet files using pandas + pyarrow. Supports snappy/gzip/zstd compression and partition columns. 12 unit tests. Install: `pip install drt-core[parquet]`.
 - **Snowflake source connector** (#162): Extract data from Snowflake using `snowflake-connector-python`. Supports account, user, password/password_env, database, schema, warehouse, and optional role. Install: `pip install drt-core[snowflake]`.
 - **Dockerfile and docker-compose example** (#161): Lightweight `python:3.12-slim` image with configurable `DRT_EXTRAS` build arg, non-root user, and pinned version. Includes `docker-compose.yml` and `.dockerignore`.
 

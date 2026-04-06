@@ -10,6 +10,9 @@ from typing import Any
 
 import pytest
 
+pytest.importorskip("pandas")
+pytest.importorskip("pyarrow")
+
 from drt.config.models import ParquetDestinationConfig, SyncOptions
 from drt.destinations.parquet import ParquetDestination
 
@@ -52,7 +55,9 @@ class TestParquetDestinationConfig:
         assert config.partition_by == ["region", "year"]
 
     def test_invalid_compression_rejected(self, tmp_path: Path) -> None:
-        with pytest.raises(Exception):
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError, match="compression"):
             _config(tmp_path, compression="invalid")
 
 
