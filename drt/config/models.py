@@ -239,6 +239,9 @@ class JiraDestinationConfig(BaseModel):
     description_template: str
     issue_id_field: str = "issue_id"  # row key that indicates update mode
 
+    def describe(self) -> str:
+        return f"jira ({self.project_key})"
+
 
 class ClickHouseDestinationConfig(BaseModel):
     type: Literal["clickhouse"]

@@ -108,17 +108,11 @@ class JiraDestination:
         email = os.environ.get(config.email_env)
         token = os.environ.get(config.token_env)
         if not base_url:
-            raise ValueError(
-                f"Jira destination: env var '{config.base_url_env}' is required."
-            )
+            raise ValueError(f"Jira destination: env var '{config.base_url_env}' is required.")
         if not email:
-            raise ValueError(
-                f"Jira destination: env var '{config.email_env}' is required."
-            )
+            raise ValueError(f"Jira destination: env var '{config.email_env}' is required.")
         if not token:
-            raise ValueError(
-                f"Jira destination: env var '{config.token_env}' is required."
-            )
+            raise ValueError(f"Jira destination: env var '{config.token_env}' is required.")
 
         result = SyncResult()
         rate_limiter = RateLimiter(sync_options.rate_limit.requests_per_second)

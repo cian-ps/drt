@@ -210,6 +210,23 @@ destination:
     token_env: HUBSPOT_TOKEN      # Private App token with CRM write scope
 ```
 
+### `type: jira`
+
+```yaml
+destination:
+  type: jira
+  base_url_env: JIRA_BASE_URL           # env var → e.g. https://myorg.atlassian.net
+  email_env: JIRA_EMAIL                 # env var → Jira account email
+  token_env: JIRA_API_TOKEN             # env var → Jira API token
+  project_key: "PROJ"                   # Jira project key (supports Jinja2)
+  issue_type: "Task"                    # default: "Task" (supports Jinja2)
+  summary_template: "Alert: {{ row.title }}"         # required: Jinja2 template
+  description_template: "Details: {{ row.body }}"    # required: Jinja2 template
+  issue_id_field: issue_id              # default: "issue_id" — if present in row, updates the issue; otherwise creates
+```
+
+> **Create vs Update:** If the row contains the `issue_id_field` column (default: `issue_id`), the destination updates that Jira issue (PUT). Otherwise, it creates a new issue (POST). Description is rendered as Atlassian Document Format (ADF) for Jira REST API v3.
+
 ### `type: google_sheets`
 
 ```yaml
