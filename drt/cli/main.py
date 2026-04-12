@@ -48,6 +48,7 @@ from drt.cli.output import (
     print_status_table,
     print_status_verbose,
     print_sync_result,
+    print_dry_run_summary,
     print_sync_start,
     print_sync_table,
     print_test_header,
@@ -116,6 +117,16 @@ def run(
     ),
 ) -> None:
     """Run sync(s) defined in the project."""
+    _run_syncs(select, dry_run, verbose, output)
+
+
+def _run_syncs(
+    select: str | None,
+    dry_run: bool,
+    verbose: bool,
+    output: str,
+) -> None:
+    """Internal implementation of the run/sync commands."""
     import json as json_mod
 
     from drt.config.credentials import load_profile
@@ -160,7 +171,7 @@ def run(
 
     for sync in syncs:
         dest = _get_destination(sync)
-        if not json_mode:
+        if not json_mode and not dry_run:
             print_sync_start(sync.name, dry_run)
         t0 = time.monotonic()
         try:
@@ -198,7 +209,10 @@ def run(
                 "dry_run": dry_run,
             })
         else:
-            print_sync_result(sync.name, result, elapsed)
+            if dry_run:
+                print_dry_run_summary(sync, profile, result.success)
+            else:
+                print_sync_result(sync.name, result, elapsed)
         if result.failed > 0:
             had_errors = True
             if not json_mode and verbose and result.row_errors:
