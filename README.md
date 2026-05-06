@@ -351,6 +351,7 @@ We welcome contributions of all sizes — from typo fixes to new connectors. drt
 - **Pick something to work on:** [Good First Issues](https://github.com/drt-hub/drt/issues?q=is%3Aopen+label%3A%22good+first+issue%22)
 - **Understand how decisions are made:** [GOVERNANCE.md](GOVERNANCE.md)
 - **What's free vs. enterprise:** [OPEN_CORE.md](OPEN_CORE.md)
+- **Versioning & breaking changes:** [VERSIONING.md](VERSIONING.md)
 
 ## Contributors ✨
 
